@@ -198,31 +198,22 @@ int main(int argc, char* argv[]) {
 	#pragma endregion
 
 	Shader* myShader = new Shader("vertexSource.vert", "fragmentSource.frag");
-	//Shader myShader("vertexSource.vert", "fragmentSource.frag");
+	Shader* lineShader = new Shader("vertexSource.vert", "outline.frag");
 	
 
-	Material *myMaterial = new Material(myShader,
-										LoadImageToGpu("container2.png",GL_RGBA,GL_RGBA,0),
-										LoadImageToGpu("container2_specular.png", GL_RGBA, GL_RGBA, 1),
-										glm::vec3(1.0f, 1.0f, 1.0f),
-										LoadImageToGpu("emission.jpg", GL_RGB, GL_RGB, 2),
-										32.0f);
+	//Material *myMaterial = new Material(myShader,
+	//									LoadImageToGpu("container2.png",GL_RGBA,GL_RGBA,0),
+	//									LoadImageToGpu("container2_specular.png", GL_RGBA, GL_RGBA, 1),
+	//									glm::vec3(1.0f, 1.0f, 1.0f),
+	//									LoadImageToGpu("emission.jpg", GL_RGB, GL_RGB, 2),
+	//									32.0f);
 
 	# pragma region 加载模型 绑定VAO和VBO		
 		
-		//Mesh Cube(vertices);
-
-		//std::string path = "nanosuit\nanosuit.obj";
 		Model model(exePath.substr(0, exePath.find_last_of('\\')) + "\\nanosuit\\nanosuit.obj");
 
 	#pragma endregion
 
-	#pragma region Init and Load Texture
-		/*unsigned int TexBufferA;
-		TexBufferA = LoadImageToGpu("container.jpg", GL_RGB, GL_RGB, 0);
-		unsigned int TexBufferB;
-		TexBufferB = LoadImageToGpu("awesomeface.png", GL_RGBA, GL_RGBA, 0);*/
-	#pragma endregion
 
 	#pragma region MVP matrix Init 创建MVP矩阵
 		glm::mat4 viewMat;
@@ -234,6 +225,10 @@ int main(int argc, char* argv[]) {
 	#pragma region  Draw State Set  设置GL绘制状态(命令)
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //线框模式
 			glEnable(GL_DEPTH_TEST);   //开启深度测试
+
+			glEnable(GL_STENCIL_TEST);
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
 	#pragma endregion
 
 	while (!glfwWindowShouldClose(window))
@@ -243,8 +238,11 @@ int main(int argc, char* argv[]) {
 
 		//render command
 		//Clear
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   //对应Unity中的摄像机clear模式
+		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);  //对应Unity中的摄像机clear模式
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);   
+
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
 
 		myShader->use();
 
@@ -254,15 +252,10 @@ int main(int argc, char* argv[]) {
 		{
 			// Matrix 变换
 			glm::mat4 modelMat;
-			modelMat = glm::translate(modelMat, glm::vec3(0.0f, -1.75f, 0.0f));
+			modelMat = glm::translate(modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
 			modelMat = glm::rotate(modelMat, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 			modelMat = glm::scale(modelMat, glm::vec3(0.2f, 0.2f, 0.2f));
-			//Set Material --> 1Shader Program
-			myShader->use();	
-		
-			//Set Material --> 3Uniforms
-			glUniform1i(glGetUniformLocation(myShader->ID, "myTexture"), 0);
-			glUniform1i(glGetUniformLocation(myShader->ID, "myFaceTex"), 1);
+
 			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
 			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
 			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "projectionMat"), 1, GL_FALSE, glm::value_ptr(projectionMat));
@@ -270,35 +263,49 @@ int main(int argc, char* argv[]) {
 			glUniform3f(glGetUniformLocation(myShader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
 			
 			glUniform3f(glGetUniformLocation(myShader->ID, "lightPos"), light.position.x, light.position.y, light.position.z);
-			//glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), light.color.x, light.color.y, light.color.z);
-			//glUniform3f(glGetUniformLocation(myShader->ID, "lightDirectionUniform"), light.direction.x, light.direction.y, light.direction.z);
+			glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), light.color.x, light.color.y, light.color.z);
+			glUniform3f(glGetUniformLocation(myShader->ID, "lightDirectionUniform"), light.direction.x, light.direction.y, light.direction.z);
 		
-			// Spot 聚光灯的Phy角的大小
-			/*
-			glUniform1f(glGetUniformLocation(myShader->ID, "lightS.cosPhyInner"), light.cosPhyInner);
-			glUniform1f(glGetUniformLocation(myShader->ID, "lightS.cosPhyOutter"), light.cosPhyOutter);
-			*/
-		
-			//点光源的衰减 attenuation
-			/*
-			glUniform1f(glGetUniformLocation(myShader->ID, "lightP.constant"), light.constant);
-			glUniform1f(glGetUniformLocation(myShader->ID, "lightP.linear"), light.linear);
-			glUniform1f(glGetUniformLocation(myShader->ID, "lightP.quadratic"), light.quadratic);
-			*/
 		
 			//设置Cam worldPos
 			glUniform3f(glGetUniformLocation(myShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
-		
-			myMaterial->shader->SetUniform3f("material.ambient",myMaterial->ambient);
-			myMaterial->shader->SetUniform1i("material.diffuse", myMaterial->diffuse);
-			myMaterial->shader->SetUniform1i("material.diffuse",0);
-			myMaterial->shader->SetUniform1i("material.specular",1);
-			myMaterial->shader->SetUniform1i("material.emission",2);
-			myMaterial->shader->SetUniform1f("material.shininess", myMaterial->shininess);
-		
-			model.Draw(myMaterial->shader);
+
+			model.Draw(myShader);
+		}	
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+
+		lineShader->use();
+
+		for (int i = 0; i < 1; i++)
+		{
+			// Matrix 变换
+			glm::mat4 modelMat;
+			modelMat = glm::translate(modelMat, glm::vec3(0.0f, -0.05f, 0.0f));
+			modelMat = glm::rotate(modelMat, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+			modelMat = glm::scale(modelMat, glm::vec3(0.205f, 0.205f, 0.205f));
+
+			glUniformMatrix4fv(glGetUniformLocation(lineShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+			glUniformMatrix4fv(glGetUniformLocation(lineShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+			glUniformMatrix4fv(glGetUniformLocation(lineShader->ID, "projectionMat"), 1, GL_FALSE, glm::value_ptr(projectionMat));
+			glUniform3f(glGetUniformLocation(lineShader->ID, "ambientColor"), 0.5f, 0.5f, 0.5f);
+			glUniform3f(glGetUniformLocation(lineShader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
+
+			glUniform3f(glGetUniformLocation(lineShader->ID, "lightPos"), light.position.x, light.position.y, light.position.z);
+			glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), light.color.x, light.color.y, light.color.z);
+			//glUniform3f(glGetUniformLocation(myShader->ID, "lightDirectionUniform"), light.direction.x, light.direction.y, light.direction.z);
+
+
+			//设置Cam worldPos
+			glUniform3f(glGetUniformLocation(lineShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+
+			model.Draw(lineShader);
 		}
 
+		glStencilMask(0xFF);
+		glEnable(GL_DEPTH_TEST);
 
 
 		//check and call events and swap the buffers

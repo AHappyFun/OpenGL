@@ -86,9 +86,9 @@ Camera camera(glm::vec3(0, 0, 3.0f), glm::radians(15.0f), glm::radians(180.0f), 
 #pragma endregion
 
 #pragma region Init Light 初始化灯光
-//LightSpot light (glm::vec3(0,5.0f,0),glm::vec3(90.0f,0,0),glm::vec3(1.0f, 1.0f, 0.0f));
+//LightSpot light (glm::vec3(0,5.0f,0),glm::vec3(90.0f,0,0),glm::vec3(1.0f, 1.0f, 1.0f));
 
-LightDirection light(glm::vec3(0, 5.0f, 0), glm::vec3(90.0f, 0, 0), glm::vec3(1.0f, 1.0f, 1.0f));
+LightDirection light(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1.0f, 1.0f, 0.0f));
 
 #pragma endregion
 
@@ -252,7 +252,12 @@ int main() {
 
 	#pragma region  Draw State Set  设置GL绘制状态(命令)
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //线框模式
+			
+			//glEnable(GL_STENCIL_TEST); // 开启模板测试
+
+
 			glEnable(GL_DEPTH_TEST);   //开启深度测试
+			glDepthFunc(GL_LESS);
 	#pragma endregion
 
 	while (!glfwWindowShouldClose(window))
@@ -262,7 +267,7 @@ int main() {
 
 		//render command
 		//Clear
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   //对应Unity中的摄像机clear模式
 
 		viewMat = camera.GetViewMatrix();   //需要在while循环里变化

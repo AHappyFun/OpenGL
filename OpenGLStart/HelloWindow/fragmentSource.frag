@@ -38,6 +38,15 @@ uniform LightSpot lightS;
 
 out vec4 color;  
 
+//非线性深度转到线性
+float Linear01Depth(float depth)
+{
+	float near = 0.1;
+	float far = 100.0;
+	float z = depth * 2.0 - 1.0;   //转换到NDC
+	return (2 * near * far) / (far + near - depth * (far - near));
+}
+
 void main() 
 {			
 		float dist=length(lightPos-FragPos);
@@ -70,8 +79,10 @@ void main()
 			spotRatio=0.0f;
 		}
 
-		color=vec4((ambient+(diffuse+specular)*spotRatio)*objColor,1.0);
+		color=vec4((ambient+(diffuse+specular))*objColor,1.0);
 
-
+		float depth = Linear01Depth(gl_FragCoord.z) / 100.0;
+		color = vec4(vec3(depth),1);
 		
-}		
+}	
+

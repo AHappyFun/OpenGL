@@ -155,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragmentSource.frag" />
+    <Text Include="outline.frag" />
     <Text Include="vertexSource.vert" />
   </ItemGroup>
   <ItemGroup>

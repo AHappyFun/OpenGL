@@ -78,6 +78,7 @@
   <ItemGroup>
     <Text Include="fragmentSource.frag" />
     <Text Include="vertexSource.vert" />
+    <Text Include="outline.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="container.jpg">
