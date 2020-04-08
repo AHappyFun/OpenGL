@@ -226,9 +226,14 @@ int main(int argc, char* argv[]) {
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);   //线框模式
 			glEnable(GL_DEPTH_TEST);   //开启深度测试
 
-			glEnable(GL_STENCIL_TEST);
+			glEnable(GL_CULL_FACE); //开启面剔除，默认剔除背面
+			glCullFace(GL_FRONT);
+
+			glEnable(GL_STENCIL_TEST);  //开启模板测试
 			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); 
+
+
 	#pragma endregion
 
 	while (!glfwWindowShouldClose(window))
