@@ -96,6 +96,24 @@
     <Image Include="emission.jpg">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="front.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="left.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="right.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="top.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="back.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="bottom.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DrawModel.rc">
@@ -104,5 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="skyboxVert.vert" />
+    <None Include="skyboxFrag.frag" />
   </ItemGroup>
 </Project>
