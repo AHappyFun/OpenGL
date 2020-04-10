@@ -14,6 +14,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "Camera.h"
+#include <time.h> 
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -213,10 +214,11 @@ int main(int argc, char* argv[]) {
 		glViewport(0, 0, 800, 600);
 	#pragma endregion
 
-	Shader* myShader = new Shader("vertexSource.vert", "fragmentSource.frag");
-	Shader* lineShader = new Shader("vertexSource.vert", "outline.frag");
-	Shader* skyboxShader = new Shader("skyboxVert.vert", "skyboxFrag.frag");
-	
+	Shader* myShader = new Shader("vertexSource.vert", "fragmentSource.frag", nullptr);
+	Shader* lineShader = new Shader("vertexSource.vert", "outline.frag", nullptr);
+	Shader* skyboxShader = new Shader("skyboxVert.vert", "skyboxFrag.frag", nullptr);
+	Shader* explodeShader = new Shader("showNormal.vert", "explode.frag", "explode.geom");
+	Shader* showNormalShader = new Shader("showNormal.vert", "showNormal.frag", "showNormal.geom");
 
 	//Material *myMaterial = new Material(myShader,
 	//									LoadImageToGpu("container2.png",GL_RGBA,GL_RGBA,0),
@@ -304,37 +306,73 @@ int main(int argc, char* argv[]) {
 		glBindVertexArray(0);
 		glDepthMask(GL_TRUE);
 
+		//glm::mat4 modelMat;
+		//modelMat = glm::translate(modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
+		//modelMat = glm::rotate(modelMat, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+		//modelMat = glm::scale(modelMat, glm::vec3(0.2f, 0.2f, 0.2f));
+		//viewMat = camera.GetViewMatrix();   
+		//showNormalShader->use();
+		//glUniformMatrix4fv(glGetUniformLocation(showNormalShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+		//glUniformMatrix4fv(glGetUniformLocation(showNormalShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+		//glUniformMatrix4fv(glGetUniformLocation(showNormalShader->ID, "projectionMat"), 1, GL_FALSE, glm::value_ptr(projectionMat));
+		//
+		//showNormalShader->SetUniform1f("time", glfwGetTime());
+		//model.Draw(showNormalShader);
+		
 		//---绘制其他---
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
 
 		myShader->use();
-
+		explodeShader->use();
+		//showNormalShader->use();
 		viewMat = camera.GetViewMatrix();   //需要在while循环里变化
 		
 		for (int i = 0; i < 1; i++)
 		{
 			// Matrix 变换
+			//glm::mat4 modelMat;
+			//modelMat = glm::translate(modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
+			//modelMat = glm::rotate(modelMat, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+			//modelMat = glm::scale(modelMat, glm::vec3(0.2f, 0.2f, 0.2f));
+			//
+			//glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+			//glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+			//glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "projectionMat"), 1, GL_FALSE, glm::value_ptr(projectionMat));
+			//glUniform3f(glGetUniformLocation(myShader->ID,"ambientColor"),0.5f,0.5f,0.5f);
+			//glUniform3f(glGetUniformLocation(myShader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
+			//
+			//glUniform3f(glGetUniformLocation(myShader->ID, "lightPos"), light.position.x, light.position.y, light.position.z);
+			//glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), light.color.x, light.color.y, light.color.z);
+			//glUniform3f(glGetUniformLocation(myShader->ID, "lightDirectionUniform"), light.direction.x, light.direction.y, light.direction.z);
+			//
+			//
+			////设置Cam worldPos
+			//glUniform3f(glGetUniformLocation(myShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+			//
+			//model.Draw(myShader);
+
 			glm::mat4 modelMat;
 			modelMat = glm::translate(modelMat, glm::vec3(0.0f, 0.0f, 0.0f));
 			modelMat = glm::rotate(modelMat, (GLfloat)glfwGetTime() * 50.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 			modelMat = glm::scale(modelMat, glm::vec3(0.2f, 0.2f, 0.2f));
-
-			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
-			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
-			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "projectionMat"), 1, GL_FALSE, glm::value_ptr(projectionMat));
-			glUniform3f(glGetUniformLocation(myShader->ID,"ambientColor"),0.5f,0.5f,0.5f);
-			glUniform3f(glGetUniformLocation(myShader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
+			//viewMat = camera.GetViewMatrix();
 			
-			glUniform3f(glGetUniformLocation(myShader->ID, "lightPos"), light.position.x, light.position.y, light.position.z);
-			glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), light.color.x, light.color.y, light.color.z);
-			glUniform3f(glGetUniformLocation(myShader->ID, "lightDirectionUniform"), light.direction.x, light.direction.y, light.direction.z);
-		
-		
-			//设置Cam worldPos
-			glUniform3f(glGetUniformLocation(myShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+			glUniformMatrix4fv(glGetUniformLocation(explodeShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+			glUniformMatrix4fv(glGetUniformLocation(explodeShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+			glUniformMatrix4fv(glGetUniformLocation(explodeShader->ID, "projectionMat"), 1, GL_FALSE, glm::value_ptr(projectionMat));
 
-			model.Draw(myShader);
+			//srand((unsigned)time(NULL));
+			//showNormalShader->SetUniform1f("time", rand() / double(RAND_MAX));
+			explodeShader->SetUniform1f("time", glfwGetTime());
+			model.Draw(explodeShader);
+
+			showNormalShader->use();
+			glUniformMatrix4fv(glGetUniformLocation(showNormalShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+			glUniformMatrix4fv(glGetUniformLocation(showNormalShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+			glUniformMatrix4fv(glGetUniformLocation(showNormalShader->ID, "projectionMat"), 1, GL_FALSE, glm::value_ptr(projectionMat));
+			model.Draw(showNormalShader);
+
 		}	
 
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -358,7 +396,7 @@ int main(int argc, char* argv[]) {
 			glUniform3f(glGetUniformLocation(lineShader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
 
 			glUniform3f(glGetUniformLocation(lineShader->ID, "lightPos"), light.position.x, light.position.y, light.position.z);
-			glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), light.color.x, light.color.y, light.color.z);
+			glUniform3f(glGetUniformLocation(lineShader->ID, "lightColor"), light.color.x, light.color.y, light.color.z);
 			//glUniform3f(glGetUniformLocation(myShader->ID, "lightDirectionUniform"), light.direction.x, light.direction.y, light.direction.z);
 
 
@@ -370,6 +408,8 @@ int main(int argc, char* argv[]) {
 
 		glStencilMask(0xFF);
 		glEnable(GL_DEPTH_TEST);
+		
+
 
 
 		//check and call events and swap the buffers

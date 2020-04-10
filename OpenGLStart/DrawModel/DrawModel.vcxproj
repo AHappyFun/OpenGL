@@ -176,7 +176,12 @@
     <ResourceCompile Include="DrawModel.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="explode.frag" />
+    <None Include="explode.geom" />
     <None Include="packages.config" />
+    <None Include="showNormal.frag" />
+    <None Include="showNormal.geom" />
+    <None Include="showNormal.vert" />
     <None Include="skyboxFrag.frag" />
     <None Include="skyboxVert.vert" />
   </ItemGroup>

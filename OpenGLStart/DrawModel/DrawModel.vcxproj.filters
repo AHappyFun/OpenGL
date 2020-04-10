@@ -124,5 +124,10 @@
     <None Include="packages.config" />
     <None Include="skyboxVert.vert" />
     <None Include="skyboxFrag.frag" />
+    <None Include="showNormal.geom" />
+    <None Include="showNormal.vert" />
+    <None Include="showNormal.frag" />
+    <None Include="explode.geom" />
+    <None Include="explode.frag" />
   </ItemGroup>
 </Project>

@@ -8,10 +8,12 @@ using namespace std;
 class Shader
 {
 public:
-	Shader(const char* vertexPath, const char* fragmentPath);
+	Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath);
 	string vertexString;
+	string geometryString;
 	string fragmentString;
 	const char* vertexSource;
+	const char* geometrySource;
 	const char* fragmentSource;
 	unsigned int ID;   //shader program ID
 	void use();

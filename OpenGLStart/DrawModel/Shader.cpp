@@ -7,16 +7,19 @@
 #include <GLFW/glfw3.h>
 
 using namespace std;
-Shader::Shader(const char* vertexPath,const char* fragmentPath)
+Shader::Shader(const char* vertexPath,const char* fragmentPath, const char* geometryPath = nullptr)
 {
 	ifstream vertexFile;
+	ifstream geomFile;
 	ifstream fragmentFile;
 	stringstream vertexSStream;
+	stringstream geometrySStream;
 	stringstream fragmentSStream;
 
 	vertexFile.open(vertexPath);
 	fragmentFile.open(fragmentPath);
 	vertexFile.exceptions(ifstream::failbit||ifstream::badbit);
+	geomFile.exceptions(ifstream::failbit || ifstream::badbit);
 	fragmentFile.exceptions(ifstream::failbit || ifstream::badbit);
 
 	try
@@ -45,15 +48,32 @@ Shader::Shader(const char* vertexPath,const char* fragmentPath)
 		glShaderSource(fragment, 1, &fragmentSource, NULL);
 		glCompileShader(fragment);
 		checkCompileErrors(fragment,"FRAGMENT");
+		
+		unsigned int geometry;
+		if (geometryPath != nullptr) {
+			geomFile.open(geometryPath);
+			geometrySStream << geomFile.rdbuf();
+			geometryString = geometrySStream.str();
+			geometrySource = geometryString.c_str();		
+			geometry = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(geometry, 1, &geometrySource, NULL);
+			glCompileShader(geometry);
+			checkCompileErrors(geometry, "GEOMETRY");
+		}
 
 		ID = glCreateProgram();
 		glAttachShader(ID,vertex);
 		glAttachShader(ID,fragment);
+		if (geometryPath != nullptr)
+			glAttachShader(ID, geometry);
+
 		glLinkProgram(ID);
 		checkCompileErrors(ID,"PROGRAM");
 
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
+		if (geometryPath != nullptr)
+			glDeleteShader(geometry);
 	}
 	catch (const std::exception& ex)
 	{
